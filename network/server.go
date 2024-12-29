@@ -4,9 +4,11 @@ import (
 	"fmt"
 	"log"
 	"net"
+
+	"github.com/TurgutHarunArslan/Atopix/events"
 )
 
-func startServer() {
+func StartServer(EventBus *events.EventBus) {
 	server, err := net.Listen("tcp4", ":3000")
 
 	if err != nil {
@@ -20,6 +22,6 @@ func startServer() {
 			fmt.Println(err)
 			return
 		}
-		go handleConnection(client)
+		go handleConnection(EventBus, client)
 	}
 }

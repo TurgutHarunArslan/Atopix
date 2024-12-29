@@ -5,10 +5,14 @@ import (
 	"fmt"
 	"io"
 	"net"
+
+	"github.com/TurgutHarunArslan/Atopix/events"
+	"github.com/TurgutHarunArslan/Atopix/game/utils"
+	"github.com/TurgutHarunArslan/Atopix/network/packets"
 	"github.com/google/uuid"
 )
 
-func handleConnection(client net.Conn) {
+func handleConnection(EventBus *events.EventBus, client net.Conn) {
 	id := uuid.New().String()
 	c := Conn{
 		Id:   id,
@@ -17,7 +21,6 @@ func handleConnection(client net.Conn) {
 
 	tmp := make([]byte, 4096)
 	defer c.Conn.Close()
-
 
 	for {
 		n, err := c.Conn.Read(tmp)
@@ -40,6 +43,19 @@ func handleConnection(client net.Conn) {
 		if !ok {
 			fmt.Println("Invalid Or Missing type data")
 			continue
+		}
+
+		switch msgType {
+		case "move":
+			var packet packets.PositionChangePacket
+			if err := json.Unmarshal(tmp[:n], &tempMap); err != nil {
+				continue
+			}
+			event := events.PositionChange{
+				PlayerId: c.Id,
+				Vector:   utils.Vector{X: packet.X, Y: packet.Y},
+			}
+			EventBus.Publish(event)
 		}
 
 	}
