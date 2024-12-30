@@ -30,7 +30,13 @@ func (g *Game) Init() {
 			},
 		}
 
-		println("Player Joined")
+		pl := g.Players[data.PlayerId]
+
+		g.EventBus.Publish(events.PlayerInitilazed{
+			PlayerId: data.PlayerId,
+			Vector:   pl.Vector,
+		})
+
 	})
 
 	defer g.Ticker.Stop()

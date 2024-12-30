@@ -4,21 +4,13 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"net"
 
 	"github.com/TurgutHarunArslan/Atopix/events"
 	"github.com/TurgutHarunArslan/Atopix/game/utils"
 	"github.com/TurgutHarunArslan/Atopix/network/packets"
-	"github.com/google/uuid"
 )
 
-func handleConnection(EventBus *events.EventBus, client net.Conn) {
-	id := uuid.New().String()
-	c := Conn{
-		Id:   id,
-		Conn: client,
-	}
-
+func handleConnection(EventBus *events.EventBus, c *Conn) {
 	tmp := make([]byte, 4096)
 	defer c.Conn.Close()
 
@@ -47,11 +39,11 @@ func handleConnection(EventBus *events.EventBus, client net.Conn) {
 
 		switch msgType {
 		case "move":
-			var packet packets.PositionChangePacket
+			var packet packets.PlayerClientPositionMovedPacket
 			if err := json.Unmarshal(tmp[:n], &tempMap); err != nil {
 				continue
 			}
-			event := events.PositionChange{
+			event := events.ClientPlayerMoved{
 				PlayerId: c.Id,
 				Vector:   utils.Vector{X: packet.X, Y: packet.Y},
 			}

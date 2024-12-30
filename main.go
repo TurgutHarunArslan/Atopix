@@ -10,11 +10,16 @@ import (
 
 func main() {
 	eventBus := events.New()
+
 	game := game.Game{
 		EventBus: eventBus,
 		Players:  map[string]*Player.Player{},
 		Entities: []interfaces.EntitiyInterface{},
 	}
-	go network.StartServer(game.EventBus)
+
+	server := network.Network{}
+	server.SetEventBus(game.EventBus)
+
+	go server.Init()
 	game.Init()
 }
