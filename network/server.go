@@ -7,6 +7,7 @@ import (
 	"net"
 
 	"github.com/TurgutHarunArslan/Atopix/events"
+	"github.com/TurgutHarunArslan/Atopix/network/packets"
 	"github.com/google/uuid"
 )
 
@@ -39,7 +40,13 @@ func (s *Network) SetupEvents() {
 			return
 		}
 
-		s.Broadcast(data)
+		packet := packets.PlayerInitilizedPacket{
+			PlayerId: data.PlayerId,
+			X: data.Vector.X,
+			Y: data.Vector.Y,
+		}
+
+		s.Broadcast(packet)
 
 	})
 
@@ -50,7 +57,13 @@ func (s *Network) SetupEvents() {
 			return
 		}
 
-		s.Broadcast(data)
+		packet := packets.PlayerServerPositionMovedPacket{
+			PlayerId: data.PlayerId,
+			X: data.Vector.X,
+			Y: data.Vector.Y,
+		}
+
+		s.Broadcast(packet)
 	})
 }
 
